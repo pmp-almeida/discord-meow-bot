@@ -17,16 +17,16 @@ if (os.type() === 'Windows_NT') {
   console.log('Running on a macOS based OS')
 } else if (os.type() === 'Linux') {
   console.log('Running on Linux based OS')
-  console.log('Executing first time setup...'')
+  console.log('Executing first time setup...')
 
   //MONGODB SETUP
   const linux_version = os.version().split("~")[1].substring(0,5)
   exec('wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -'', puts)
-  if (linux_version == "20.04")
+  if (linux_version === '20.04')
     exec('echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list', puts)
-  else if (linux_version == "18.04")
+  else if (linux_version === '18.04')
     exec('echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list', puts)
-  else if (linux_version == "16.04")
+  else if (linux_version === '16.04')
     exec('echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list', puts)
 
   exec('sudo apt-get update', puts)
