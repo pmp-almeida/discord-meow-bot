@@ -133,4 +133,4 @@ temp/
 # End of https://www.toptal.com/developers/gitignore/api/node,dotenv
 
 # DELETE AT END OF DEV
-config.json
+./config.json
