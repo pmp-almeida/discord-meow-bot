@@ -50,7 +50,7 @@ client.on('message', message => {
 	if (command.permissions) {
 		const authorPerms = message.channel.permissionsFor(message.author);
 		if (!authorPerms || !authorPerms.has(command.permissions)) {
-			return message.reply('Sorry but you lack the permissions to do this.');
+			return message.reply('Sorry but you lack the permissions to do that.');
 		}
 	}
 

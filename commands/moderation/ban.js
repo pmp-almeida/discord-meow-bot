@@ -1,12 +1,12 @@
 module.exports = {
-	name: 'kick',
-	description: 'Tag a member and kick them.',
+	name: 'ban',
+	description: 'Tag a member and ban them.',
 	args: true,
-	help: 'kick <member> [reason]',
+	help: 'ban <member> [reason]',
 	usage: '<member> [reason]',
 	cooldown: 1,
 	guildOnly: true,
-	permissions: 'KICK_MEMBERS',
+	permissions: 'BAN_MEMBERS',
 	execute(client, message, args) {
 		if (!message.mentions.users.size) {
 			return message.reply('either the user in not in the server, or you didn\'t tag them!');
@@ -18,7 +18,7 @@ module.exports = {
 
 		const msg = `${taggedUser.displayName} was unbanned.\nReason: \`${reason}\``;
 
-		taggedUser.kick(reason);
+		taggedUser.ban({ reason: reason });
 		message.channel.send(msg);
 	},
 };
