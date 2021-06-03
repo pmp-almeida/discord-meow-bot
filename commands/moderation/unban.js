@@ -6,8 +6,10 @@ module.exports = {
 	usage: '<member> [reason]',
 	cooldown: 1,
 	guildOnly: true,
+	permissions: 'BAN_MEMBERS',
 	execute(client, message, args) {
 		const user_id = args[0].substring(3, args[0].length - 1);
+		let msg;
 
 		client.users.fetch(user_id)
 			.then(user => {
@@ -16,18 +18,14 @@ module.exports = {
 				}
 				let reason = args.slice(1).join(' ');
 				if(!reason) reason = 'Unspecified';
-				const msg = `${user.username} was unbanned.\nReason: \`${reason}\``;
+				msg = `${user.username} was unbanned.\nReason: \`${reason}\``;
 				message.guild.members.unban(user, reason)
-					.catch(err => {
-						if(err) {
-							console.log(err);
-							return message.channel.send('Oops... Something went wrong');
-						}
+					.catch(e => {
+						console.log(e);
+						return message.channel.send('Oops... Something went wrong');
 					});
-
-				message.channel.send(msg);
 			})
-			.catch(err => { console.log(err); });
-
+			.then(() => {	message.channel.send(msg);})
+			.catch(e => { console.log(e); });
 	},
 };
