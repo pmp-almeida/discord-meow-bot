@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+require('./data/mongoose/sys.js');
 const { prefix, token } = require('./config.json');
 
 const client = new Discord.Client();
