@@ -1,10 +1,20 @@
 const exec = require('child_process').exec;
 const os = require('os');
-const build_win = require('./build_win');
 
 function puts(error, stdout) {
 	console.log(error);
 	console.log(stdout);
+}
+
+function windows_setup(error) {
+	if(error && error.code == 1 && error.cmd == 'mongo -version') {
+		console.log('Downloading and installing MongoDB. This may take a while...');
+		exec('%cd%\\scripts\\build_win.bat &&\
+		%cd%\\scripts\\start_win.bat', puts);
+	} else {
+		console.log('MongoDB already installed. Skipping.');
+		exec('%cd%\\scripts\\start_win.bat', puts);
+	}
 }
 
 function linux_setup(error) {
@@ -25,7 +35,7 @@ console.log('Executing first time setup...');
 // Run command depending on the OS
 if (os.type() === 'Windows_NT') {
 	console.log('Running on a Windows based OS');
-	exec('mongo -version', build_win.mongodb_win_handler);
+	exec('mongo -version', windows_setup);
 } else if (os.type() === 'Darwin') {
 	console.log('Running on a macOS based OS');
 	console.log('Automatic setup not supported. Please check README.md');
