@@ -7,6 +7,19 @@ const {
 const EXAMPLE = 'Example: `tempmute <member> <time (seconds)> [reason]`';
 const mongoose = require('../../data/mongoose/api.js');
 
+const muteRole = {
+	data: {
+		name: 'Muted',
+	},
+	reason: 'necessary role to mute people.',
+};
+
+const rolePermissions = {
+	SEND_MESSAGES: false,
+	SPEAK: false,
+	ADD_REACTIONS: false,
+};
+
 function handleError(e) {
 	console.log(e);
 }
@@ -39,34 +52,27 @@ module.exports = {
 		if(!reason) reason = UNSPECIFIED;
 
 		mongoose.getRoleIdCallback('Muted', function(e, docs) {
-			const muteRole = {
-				data: {
-					name: 'Muted',
-				},
-				reason: 'necessary role to mute people.',
-			};
-
 			if(e) {
 				handleError(e);
 				return;
 			}
 			if(docs.length > 0) {
-				const role = message.guild.roles.cache.find(r => r.id == docs[0].role_id);
-				if(role) {
-					taggedUser.roles.add(role);
+				const fetched_role = message.guild.roles.cache.find(r => r.id == docs[0].role_id);
+				if(fetched_role) {
+					taggedUser.roles.add(fetched_role);
 				} else {
 					message.guild.roles.create(muteRole)
-						.then(role2 => {
+						.then(role => {
 							message.guild.channels.cache.forEach(async (channel, id) => {
-								await channel.updateOverwrite(role2, {
-									SEND_MESSAGES: false,
-									SPEAK: false,
-									ADD_REACTIONS: false,
-								});
+								await channel.updateOverwrite(role, rolePermissions);
 							});
-							docs[0].role_id = role2.id;
+							docs[0].role_id = role.id;
 							docs[0].save();
-							taggedUser.roles.add(role2);
+							taggedUser.roles.add(role);
+							setTimeout(async () => {
+								await taggedUser.roles.remove(role);
+								message.channel.send(`${taggedUser} has been unmuted after ${time} second(s).`);
+							}, time * 1000);
 						})
 						.catch(console.error);
 				}
@@ -74,23 +80,18 @@ module.exports = {
 			} else {
 				message.guild.roles.create(muteRole)
 					.then(role => {
+						message.guild.channels.cache.forEach(async (channel, id) => {
+							await channel.updateOverwrite(role, rolePermissions);
+						});
 						mongoose.addRole('Muted', role.id);
 						taggedUser.roles.add(role);
-						message.guild.channels.cache.forEach(async (channel, id) => {
-							await channel.updateOverwrite(role, {
-								SEND_MESSAGES: false,
-								SPEAK: false,
-								ADD_REACTIONS: false,
-							});
-						});
+						setTimeout(async () => {
+							await taggedUser.roles.remove(role);
+							message.channel.send(`${taggedUser} has been unmuted after ${time} second(s).`);
+						}, time * 1000);
 					})
 					.catch(console.error);
 			}
-
-			setTimeout(async () => {
-				await message.guild.members.unban(taggedUser, 'Temporary ban finished.');
-				message.channel.send(`${taggedUser} has been unbanned after ${time} second(s).`);
-			}, time * 1000);
 		});
 	},
 };
